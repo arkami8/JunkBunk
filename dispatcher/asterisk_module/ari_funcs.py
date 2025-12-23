@@ -1,5 +1,5 @@
 from aiohttp import ClientSession
-from utils.globals import ARI_URL, RECORDING_FORMAT, RECORDING_NAME
+from utils.globals import ARI_URL, RECORDING_FORMAT, RECORDING_NAME, ASTERISK_VER
 
 async def record_channel(channel_id, ari_session: ClientSession):
     recording_name = f"{RECORDING_NAME}_{channel_id}"
@@ -14,6 +14,21 @@ async def record_channel(channel_id, ari_session: ClientSession):
 async def stop_record_and_save(recording_name, ari_session: ClientSession):
     await ari_session.post(f"{ARI_URL}/recordings/live/{recording_name}/stop")
     print(f"[ARI] Recording stopped")
+
+async def get_recording_ari_22(recording_name, ari_session: ClientSession):
+    resp = await ari_session.get(
+        f"{ARI_URL}/recordings/stored/{recording_name}/file"
+    )
+
+    if resp.status != 200:
+        text = await resp.text()
+        raise Exception(f"Failed to fetch recording: {resp.status}, {text}")
+
+    file_bin = await resp.read()
+    print(f"[ARI] File Received!")
+
+    return file_bin
+
 
 async def get_recording_ari_13(recording_name, ari_session: ClientSession):
     resp = await ari_session.get(
@@ -30,18 +45,13 @@ async def get_recording_ari_13(recording_name, ari_session: ClientSession):
     return file_bin
 
 async def get_recording(recording_name, ari_session: ClientSession):
-    resp = await ari_session.get(
-        f"{ARI_URL}/recordings/stored/{recording_name}/file"
-    )
-
-    if resp.status != 200:
-        text = await resp.text()
-        raise Exception(f"Failed to fetch recording: {resp.status}, {text}")
-
-    file_bin = await resp.read()
-    print(f"[ARI] File Received!")
-
-    return file_bin
+    #This can be upgraded to support more versions if needed
+    #Just add the respective function to get recording for that version
+    #Change to switch case if more versions are added
+    if ASTERISK_VER == "13":
+        return await get_recording_ari_13(recording_name, ari_session)
+    
+    return await get_recording_ari_22(recording_name, ari_session)
 
 async def playback_recording(channel_id, full_path, ari_session: ClientSession):
     media = f"sound:{full_path}"

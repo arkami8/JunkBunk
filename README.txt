@@ -4,3 +4,6 @@ Running the project.
 2. source into venv
 3. pip install -r requirements.txt
 4. python3 dispatcher/main.py to execute
+
+For testing Asterisk 22 must be downloaded and setup on the machine
+https://www.asterisk.org/ download from here and follow  the setup guide inside the readme file

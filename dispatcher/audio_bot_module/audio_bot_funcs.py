@@ -1,13 +1,13 @@
 import io
 import aiohttp
 from aiohttp import ClientSession
-from utils.globals import AUTH_TOKEN, CONNECT_CHATBOT_URL, API_CHATBOT_URL
+from utils.globals import AUTH_TOKEN, CONNECT_CHATBOT_URL, API_CHATBOT_URL, BOT_NAME
 
-async def create_chat_with_chatbot(chatbot_slug: str, chat_session: ClientSession) -> str:
+async def create_chat_with_chatbot(chat_session: ClientSession) -> str:
     """
     Async version of sending a request to create a chat with the chatbot.
     """
-    data = {"chatbot_slug": chatbot_slug}
+    data = {"chatbot_slug": BOT_NAME}
 
     headers = {
         "authorization": f"Bearer {AUTH_TOKEN}",
@@ -33,7 +33,7 @@ async def send_audio_to_chatbot(file_bytes: io.BytesIO, chat_id: str, chat_sessi
         "accept": "application/json"
     }
 
-    data = {"chat_id": chat_id, "chatbot_slug": "Arkami"}
+    data = {"chat_id": chat_id, "chatbot_slug": BOT_NAME}
 
     form = aiohttp.FormData()
     for key, value in data.items():

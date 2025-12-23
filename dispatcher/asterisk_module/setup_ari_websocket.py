@@ -24,8 +24,6 @@ from audio_bot_module.audio_bot_funcs import (
 )
 from audio_bot_module.setup_audio_bot_websocket import listen_chat
 
-CHAT_SLUG = "Arkami"
-
 # --- ARI WebSocket listener ---
 async def listen_ari(session_manager: SessionManager):
     async with websockets.connect(ARI_WEBSOCKET_URL) as ws:
@@ -58,6 +56,8 @@ async def listen_ari(session_manager: SessionManager):
                     
         except websockets.exceptions.ConnectionClosed:
             print("[ARI] WebSocket closed")
+        except Exception as e:
+            print(f"[ARI] Error: {e}")
 
 async def customer_stopped_speaking(event, session_manager: SessionManager):
     channel_id = event["channel"]["id"]
@@ -93,7 +93,7 @@ async def on_stasis_start(event: dict, session_manager: SessionManager):
     channel_id = event["channel"]["id"]
     print(f"[ARI] Call initialized for {channel_id}")
 
-    chat_id = await create_chat_with_chatbot(CHAT_SLUG, session_manager.get_chat_session())
+    chat_id = await create_chat_with_chatbot(session_manager.get_chat_session())
 
     call_session = CallSession(channel_id, chat_id)
 
